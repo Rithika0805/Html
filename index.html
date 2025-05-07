@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybernet-X Mission Control</title>
+    <style>
+        body {
+            font-family: monospace;
+            background-color: #111;
+            color: #eee;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #222;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 80%;
+            max-width: 800px;
+        }
+
+        h1, h2 {
+            color: #0f0; /* Green */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #status-panel, #communication-log, #timer, #input-area, #output {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #444;
+            border-radius: 4px;
+        }
+
+        .urgent {
+            color: #f00; /* Red */
+            font-weight: bold;
+        }
+
+        #battery-indicator {
+            width: 50px;
+            height: 10px;
+            background-color: #555;
+            border: 1px solid #777;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        #input-area label, #input-area input, #input-area button {
+            margin-right: 10px;
+            font-family: monospace;
+            font-size: 1em;
+        }
+
+        #input-area input {
+            padding: 8px;
+            background-color: #333;
+            color: #eee;
+            border: 1px solid #555;
+            border-radius: 4px;
+        }
+
+        #input-area button {
+            padding: 8px 15px;
+            background-color: #0f0; /* Green */
+            color: #111;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #input-area button:hover {
+            background-color: #0a0; /* Darker Green */
+        }
+
+        #output {
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            border: 1px dashed #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cybernet-X Mission Control</h1>
+        <div id="status-panel">
+            <h2>Status Panel</h2>
+            <p>Core Temperature: <span id="temp">ERR</span></p>
+            <p>Power Levels: <span id="power">LOW</span></p>
+            <p>Signal Strength: <span id="signal">LOST</span></p>
+            <p>Battery: <span id="battery">25%</span> <div id="battery-indicator"></div></p>
+        </div>
+        <div id="communication-log">
+            <h2>Communication Log</h2>
+            <p>Earth's Last Message: <span class="urgent">Relay offline... Restore… Urgent!</span></p>
+        </div>
+        <div id="timer">
+            <h2>Time Remaining: <span id="countdown">40:00</span></h2>
+        </div>
+        <div id="input-area">
+            <label for="command">Enter Command:</label>
+            <input type="text" id="command">
+            <button id="reactivate-button">Reactivate</button>
+        </div>
+        <div id="output">
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const countdownDisplay = document.getElementById('countdown');
+            const commandInput = document.getElementById('command');
+            const reactivateButton = document.getElementById('reactivate-button');
+            const outputDiv = document.getElementById('output');
+
+            let timeLeft = 40 * 60; // 40 minutes in seconds
+            let timerInterval;
+
+            function updateTimer() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                countdownDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    outputDiv.textContent = "MISSION FAILURE WARNING: Cybernet-X lost forever.";
+                } else {
+                    timeLeft--;
+                }
+            }
+
+            function startTimer() {
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+
+            reactivateButton.addEventListener('click', () => {
+                const command = commandInput.value.trim();
+                if (command === "Reactivate Relay") {
+                    clearInterval(timerInterval);
+                    outputDiv.textContent = "Connection restored! Cybernet-X saved!";
+                } else if (timeLeft > 0) {
+                    outputDiv.textContent = "Incorrect command. Try again.";
+                }
+                commandInput.value = ''; // Clear the input field
+            });
+
+            // Start the timer when the page loads
+            startTimer();
+        });
+    </script>
+</body>
+</html>
